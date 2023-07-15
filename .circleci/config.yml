@@ -2,8 +2,11 @@
 version: 2.1
 commands:
   print_pipeline_id:
+    parameters:
+      id:
+        type: string
     steps:
-      - run : echo ${CIRCLE_WORKFLOW_ID}
+      - run: echo << parameters.id <<
 # Use a package of configuration called an orb.
 orbs:
   # Declare a dependency on the welcome-orb
@@ -15,7 +18,6 @@ jobs:
      - image: circleci/node:13.8.0
     steps:
       - run : echo "hello world" > ~/output.txt
-      - print_pipline_id
       - persist_to_workspace:
           root: ~/
           paths: 
@@ -25,6 +27,8 @@ jobs:
      - image: circleci/node:13.8.0
     steps:
       - run : echo world
+      - print_pipline_id::
+          id: << pipeline.id >>
       - attach_workspace:
          at: ~/
       - run: cat ~/output.txt
